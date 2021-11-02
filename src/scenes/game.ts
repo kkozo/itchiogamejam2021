@@ -66,7 +66,6 @@ export class GameScene extends Phaser.Scene {
             camera1.fadeOut(500);
             setTimeout(() => camera1.setBounds(0, 0, 800, 600), 500);
           }
-          console.log(camera1.scrollY);
         }
 
     });
