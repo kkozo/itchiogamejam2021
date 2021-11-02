@@ -23,7 +23,6 @@ export class GameScene extends Phaser.Scene {
     this.load.image('interiors_basement', 'assets/tiles/basement_32x32.png')
     this.load.image('interiors_condo', 'assets/tiles/condo_32x32.png')
     this.load.tilemapTiledJSON('House01', 'assets/map//House01/House01.json')
-
   }
 
   public create(): void {
@@ -44,7 +43,35 @@ export class GameScene extends Phaser.Scene {
     const stat03Layer = map.createLayer('Static Objects 3', [roomBuilderTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles])
     const stat02Layer = map.createLayer('Static Objects 2', [roomBuilderTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles])
     const stat01Layer = map.createLayer('Static Objects 1', [roomBuilderTiles, condoTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles])
+
+    // Click to move camera to another area of the map, with fade
+    const camera1 = this.cameras.main;
+
+    this.input.mouse.disableContextMenu();
+
+    this.input.on('pointerup', function (pointer) {
+
+        if (pointer.leftButtonReleased())
+        {
+          if (camera1.scrollY == 0) {
+            camera1.once('camerafadeoutcomplete', function (camera) {
+              camera.fadeIn(500);
+            });
+            camera1.fadeOut(500);
+            setTimeout(() => camera1.setBounds(0, 672, 800, 600), 500);
+          } else {
+            camera1.once('camerafadeoutcomplete', function (camera) {
+              camera.fadeIn(500);
+            });
+            camera1.fadeOut(500);
+            setTimeout(() => camera1.setBounds(0, 0, 800, 600), 500);
+          }
+          console.log(camera1.scrollY);
+        }
+
+    });
   }
+
 
   public update(): void {
 
