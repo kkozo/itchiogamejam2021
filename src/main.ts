@@ -11,7 +11,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     height: 600,
   },
 
-  scene: GameScene,
+  scene: [GameScene],
 
   physics: {
     default: 'arcade',
