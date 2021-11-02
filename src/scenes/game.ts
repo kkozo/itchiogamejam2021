@@ -19,6 +19,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   public update(): void {
-
+   console.log("hello");
   }
 }
