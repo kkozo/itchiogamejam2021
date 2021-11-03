@@ -4,7 +4,7 @@ import {GameScene} from './scenes/game';
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'BUG',
 
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
 
   scale: {
     width: 800,
@@ -22,6 +22,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 
   parent: 'game',
   backgroundColor: '#000000',
+
 };
 
 export const game = new Phaser.Game(gameConfig);

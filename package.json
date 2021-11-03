@@ -12,6 +12,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "mrpas": "^2.0.0",
     "phaser": "^3.55.0",
     "tslint": "^6.1.3"
   },
