@@ -1,5 +1,6 @@
 import {game} from '../main';
 import Darkness from '../map/darkness';
+import Lightsource from '../map/lightsource';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -70,7 +71,9 @@ export class GameScene extends Phaser.Scene {
 
     });
     const darkness = new Darkness(this, map);
+    const lightSource = new Lightsource(this, map);
     darkness.setActiveLayer(groundLayer);
+    lightSource.setActiveLayer(groundLayer);
   }
 
 
