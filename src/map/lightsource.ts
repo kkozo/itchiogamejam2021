@@ -4,7 +4,6 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
   private fov?: Mrpas[];
 
   private map?: Phaser.Tilemaps.Tilemap;
-  private activeLayer: Phaser.Tilemaps.TilemapLayer;
   private direction = new Phaser.Math.Vector2(1, 0);
   private angle = 250;
   private debugTriangle: Phaser.Geom.Triangle;
@@ -41,10 +40,6 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     this.circle3 = this.scene.add.circle(this.debugTriangle.x3, this.debugTriangle.y3, 15, 0x0000ff);
 
 
-  }
-
-  public setActiveLayer(newActiveLayer: Phaser.Tilemaps.TilemapLayer): void {
-    this.activeLayer = newActiveLayer;
   }
 
   update(time: number, delta: number): void {

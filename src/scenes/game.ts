@@ -1,6 +1,7 @@
-import {game} from '../main';
 import Darkness from '../map/darkness';
 import Lightsource from '../map/lightsource';
+import GameMap from '../map/map';
+import {HOUSE_LEVEL} from '../data/levels';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -10,43 +11,29 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class GameScene extends Phaser.Scene {
 
+  public gameMap: GameMap;
+
   constructor() {
     super(sceneConfig);
   }
 
   public preload(): void {
-    this.load.image('interiors_kitchen', 'assets/tiles/kitchen_32x32.png');
-    this.load.image('interiors_generic', 'assets/tiles/generic_32x32.png');
-    this.load.image('interiors_bathroom', 'assets/tiles/bathroom_32x32.png');
-    this.load.image('interiors_bedroom', 'assets/tiles/bedroom_32x32.png');
-    this.load.image('interiors_living_room', 'assets/tiles/living_room_32x32.png');
-    this.load.image('interiors_room_builder', 'assets/tiles/room_builder_32x32.png');
-    this.load.image('interiors_visible_upstairs', 'assets/tiles/visible_upstairs_32x32.png');
-    this.load.image('interiors_basement', 'assets/tiles/basement_32x32.png');
-    this.load.image('interiors_condo', 'assets/tiles/condo_32x32.png');
-    this.load.tilemapTiledJSON('House01', 'assets/map//House01/House01.json');
-
+    // this.load.image('interiors_kitchen', 'assets/tiles/kitchen_32x32.png');
+    // this.load.image('interiors_generic', 'assets/tiles/generic_32x32.png');
+    // this.load.image('interiors_bathroom', 'assets/tiles/bathroom_32x32.png');
+    // this.load.image('interiors_bedroom', 'assets/tiles/bedroom_32x32.png');
+    // this.load.image('interiors_living_room', 'assets/tiles/living_room_32x32.png');
+    // this.load.image('interiors_room_builder', 'assets/tiles/room_builder_32x32.png');
+    // this.load.image('interiors_visible_upstairs', 'assets/tiles/visible_upstairs_32x32.png');
+    // this.load.image('interiors_basement', 'assets/tiles/basement_32x32.png');
+    // this.load.image('interiors_condo', 'assets/tiles/condo_32x32.png');
+    // this.load.tilemapTiledJSON('House01', 'assets/map//House01/House01.json');
+    this.gameMap = new GameMap(this, HOUSE_LEVEL);
+    this.gameMap.loadAssets();
   }
 
   public create(): void {
-    const map = this.make.tilemap({key: 'House01'});
-    const genericTiles = map.addTilesetImage('Generic', 'interiors_generic');
-    const kitchenTiles = map.addTilesetImage('Kitchen', 'interiors_kitchen');
-    const bathroomTiles = map.addTilesetImage('Bathroom', 'interiors_bathroom');
-    const bedroomTiles = map.addTilesetImage('Bedroom', 'interiors_bedroom');
-    const livingRoomTiles = map.addTilesetImage('Living Room', 'interiors_living_room');
-    const condoTiles = map.addTilesetImage('Condo', 'interiors_condo');
-    const basementTiles = map.addTilesetImage('Basement', 'interiors_basement');
-    const visUpstairsTiles = map.addTilesetImage('Visible Upstairs', 'interiors_visible_upstairs');
-    const roomBuilderTiles = map.addTilesetImage('Room Builder', 'interiors_room_builder');
-
-    const groundLayer = map.createLayer('Floors', [roomBuilderTiles]);
-    const wallsLayer = map.createLayer('Walls', [roomBuilderTiles]);
-    const stat04Layer = map.createLayer('Static Objects 4', [roomBuilderTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles]);
-    const stat03Layer = map.createLayer('Static Objects 3', [roomBuilderTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles]);
-    const stat02Layer = map.createLayer('Static Objects 2', [roomBuilderTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles]);
-    const stat01Layer = map.createLayer('Static Objects 1', [roomBuilderTiles, condoTiles, kitchenTiles, bedroomTiles, livingRoomTiles, genericTiles, bathroomTiles]);
-
+    const map = this.gameMap.createMap();
     const camera1 = this.cameras.main;
 
     this.input.mouse.disableContextMenu();
@@ -72,8 +59,6 @@ export class GameScene extends Phaser.Scene {
     });
     const darkness = new Darkness(this, map);
     const lightSource = new Lightsource(this, map);
-    darkness.setActiveLayer(groundLayer);
-    lightSource.setActiveLayer(groundLayer);
   }
 
 

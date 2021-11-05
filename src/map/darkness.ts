@@ -1,10 +1,6 @@
 
 export default class Darkness extends Phaser.GameObjects.GameObject {
   private map?: Phaser.Tilemaps.Tilemap;
-  private bounds: Phaser.Geom.Rectangle;
-  private activeLayer: Phaser.Tilemaps.TilemapLayer;
-
-  // other properties and preload()
 
   constructor(scene: Phaser.Scene, map: Phaser.Tilemaps.Tilemap) {
     super(scene, 'tileMapDarkness');
@@ -14,10 +10,6 @@ export default class Darkness extends Phaser.GameObjects.GameObject {
     this.scene.events.on('update', (time, delta) => {
       this.update(time, delta);
     });
-  }
-
-  public setActiveLayer(newActiveLayer: Phaser.Tilemaps.TilemapLayer): void {
-    this.activeLayer = newActiveLayer;
   }
 
   update(time: number, delta: number): void {
