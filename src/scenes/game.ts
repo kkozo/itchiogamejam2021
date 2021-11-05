@@ -18,16 +18,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   public preload(): void {
-    // this.load.image('interiors_kitchen', 'assets/tiles/kitchen_32x32.png');
-    // this.load.image('interiors_generic', 'assets/tiles/generic_32x32.png');
-    // this.load.image('interiors_bathroom', 'assets/tiles/bathroom_32x32.png');
-    // this.load.image('interiors_bedroom', 'assets/tiles/bedroom_32x32.png');
-    // this.load.image('interiors_living_room', 'assets/tiles/living_room_32x32.png');
-    // this.load.image('interiors_room_builder', 'assets/tiles/room_builder_32x32.png');
-    // this.load.image('interiors_visible_upstairs', 'assets/tiles/visible_upstairs_32x32.png');
-    // this.load.image('interiors_basement', 'assets/tiles/basement_32x32.png');
-    // this.load.image('interiors_condo', 'assets/tiles/condo_32x32.png');
-    // this.load.tilemapTiledJSON('House01', 'assets/map//House01/House01.json');
     this.gameMap = new GameMap(this, HOUSE_LEVEL);
     this.gameMap.loadAssets();
   }
