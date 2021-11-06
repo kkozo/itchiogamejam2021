@@ -43,20 +43,23 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
   }
 
   update(time: number, delta: number): void {
-    const cameraOriginX = this.scene.input.activePointer.x;
-    const cameraOriginY = this.scene.input.activePointer.y;
-    const tileX = this.map.worldToTileX(cameraOriginX);
-    const tileY = this.map.worldToTileX(cameraOriginY);
+    const pointerX = this.scene.input.activePointer.worldX;
+    const pointerY = this.scene.input.activePointer.worldY;
+
+    const tileX = this.map.worldToTileX(pointerX);
+    const tileY = this.map.worldToTileX(pointerY);
 
     this.angle = this.angle + delta / 250;
     this.direction.rotate(5 / delta / 25);
-    const vect = new Phaser.Math.Vector2(cameraOriginX + this.length * this.direction.x, cameraOriginY + this.length * this.direction.y);
+    const vect = new Phaser.Math.Vector2(pointerX + this.length * this.direction.x, pointerY + this.length * this.direction.y);
 
     const radiusVect = this.direction.clone().rotate(Math.PI / 3);
-    this.circle1.setPosition(cameraOriginX, cameraOriginY);
+    this.circle1.setPosition(pointerX, pointerY);
     this.circle2.setPosition(vect.x, vect.y);
-    this.circle3.setPosition(cameraOriginX + this.length * radiusVect.x, cameraOriginY + this.length * radiusVect.y);
-    this.debugTriangle.setTo(this.map.worldToTileX(cameraOriginX), this.map.worldToTileY(cameraOriginY), this.map.worldToTileX(vect.x), this.map.worldToTileY(vect.y), this.map.worldToTileX(cameraOriginX + this.length * radiusVect.x), this.map.worldToTileY(cameraOriginY + this.length * radiusVect.y));
+    this.circle3.setPosition(pointerX + this.length * radiusVect.x, pointerY + this.length * radiusVect.y);
+    this.debugTriangle.setTo(this.map.worldToTileX(pointerX), this.map.worldToTileY(pointerY),
+      this.map.worldToTileX(vect.x), this.map.worldToTileY(vect.y), this.map.worldToTileX(pointerX + this.length * radiusVect.x),
+      this.map.worldToTileY(pointerY + this.length * radiusVect.y));
 
     for (const layer of this.map.layers) {
       this.fov[0].compute(

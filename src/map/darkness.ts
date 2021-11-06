@@ -13,15 +13,16 @@ export default class Darkness extends Phaser.GameObjects.GameObject {
   }
 
   update(time: number, delta: number): void {
-    for (const layer of this.map.layers) {
+
     for (let y = 0; y < this.map.height; y++) {
       for (let x = 0; x < this.map.width; x++) {
+        for (const layer of this.map.layers) {
         if (layer !== undefined) {
           const tile = layer.tilemapLayer?.getTileAt(x, y);
           if (!tile) {
             continue;
           }
-          tile.alpha = 0;
+          tile.tint = 0x444444;
         }
       }
     }
