@@ -2,6 +2,7 @@ import Darkness from '../map/darkness';
 import Lightsource from '../map/lightsource';
 import GameMap from '../map/map';
 import {HOUSE_LEVEL} from '../data/levels';
+import ContextMenu from '../menu/contextMenu';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -20,35 +21,19 @@ export class GameScene extends Phaser.Scene {
   public preload(): void {
     this.gameMap = new GameMap(this, HOUSE_LEVEL);
     this.gameMap.loadAssets();
+    this.load.image('menuArrow', 'assets/menu/arrow.png');
+    this.load.audio('click', 'assets/sounds/retro_ui_menu_blip_click_02.wav');
   }
 
   public create(): void {
-    const map = this.gameMap.createMap();
+    this.gameMap.createMap();
+    const map = this.gameMap.getMap();
     const camera1 = this.cameras.main;
-
+    const contextMenu = new ContextMenu(this, this.gameMap);
     this.input.mouse.disableContextMenu();
 
-    this.input.on('pointerup', pointer => {
-
-      if (pointer.leftButtonReleased()) {
-        if (camera1.scrollY === 0) {
-          camera1.once('camerafadeoutcomplete', camera => {
-            camera.fadeIn(500);
-          });
-          camera1.fadeOut(500);
-          setTimeout(() => camera1.setBounds(0, 672, 800, 600), 500);
-        } else {
-          camera1.once('camerafadeoutcomplete', camera => {
-            camera.fadeIn(500);
-          });
-          camera1.fadeOut(500);
-          setTimeout(() => camera1.setBounds(0, 0, 800, 600), 500);
-        }
-      }
-
-    });
-    const darkness = new Darkness(this, map);
-    const lightSource = new Lightsource(this, map);
+    const darkness = new Darkness(this, this.gameMap);
+    const lightSource = new Lightsource(this, this.gameMap);
   }
 
 

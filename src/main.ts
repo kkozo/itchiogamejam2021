@@ -7,8 +7,8 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
 
   scale: {
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
   },
 
   scene: [GameScene],

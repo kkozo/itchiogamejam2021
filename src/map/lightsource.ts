@@ -1,9 +1,9 @@
 import {Mrpas} from 'mrpas';
+import GameMap from './map';
 
 export default class Lightsource extends Phaser.GameObjects.GameObject {
-  private fov?: Mrpas[];
-
-  private map?: Phaser.Tilemaps.Tilemap;
+  private fov?: Mrpas;
+  private tilemap: Phaser.Tilemaps.Tilemap;
   private direction = new Phaser.Math.Vector2(1, 0);
   private angle = 250;
   private debugTriangle: Phaser.Geom.Triangle;
@@ -15,19 +15,17 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
 
   // other properties and preload()
 
-  constructor(scene: Phaser.Scene, map: Phaser.Tilemaps.Tilemap) {
+  constructor(scene: Phaser.Scene, private gameMap: GameMap) {
     super(scene, 'lightSource');
-    this.map = map;
-    this.fov = [];
+    this.tilemap = gameMap.getMap();
+
     scene.add.existing(this);
-
-
-    for (const layer of this.map.layers) {
-      this.fov.push(new Mrpas(this.map.width, this.map.height, (x, y) => {
-        const tile = layer.tilemapLayer.getTileAt(x, y);
+    this.fov = (new Mrpas(this.tilemap.width, this.tilemap.height, (x, y) => {
+      for (const layer of this.gameMap.backgroundLayers) {
+        const tile = layer.getTileAt(x, y);
         return tile && !tile.collides;
-      }));
-    }
+      }
+    }));
     this.scene.events.on('darknessCreated', (time, delta) => {
       this.update(time, delta);
     });
@@ -45,9 +43,8 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
   update(time: number, delta: number): void {
     const pointerX = this.scene.input.activePointer.worldX;
     const pointerY = this.scene.input.activePointer.worldY;
-
-    const tileX = this.map.worldToTileX(pointerX);
-    const tileY = this.map.worldToTileX(pointerY);
+    const tileX = this.tilemap.worldToTileX(pointerX);
+    const tileY = this.tilemap.worldToTileX(pointerY);
 
     this.angle = this.angle + delta / 250;
     this.direction.rotate(5 / delta / 25);
@@ -57,17 +54,16 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     this.circle1.setPosition(pointerX, pointerY);
     this.circle2.setPosition(vect.x, vect.y);
     this.circle3.setPosition(pointerX + this.length * radiusVect.x, pointerY + this.length * radiusVect.y);
-    this.debugTriangle.setTo(this.map.worldToTileX(pointerX), this.map.worldToTileY(pointerY),
-      this.map.worldToTileX(vect.x), this.map.worldToTileY(vect.y), this.map.worldToTileX(pointerX + this.length * radiusVect.x),
-      this.map.worldToTileY(pointerY + this.length * radiusVect.y));
-
-    for (const layer of this.map.layers) {
-      this.fov[0].compute(
+    this.debugTriangle.setTo(this.tilemap.worldToTileX(pointerX), this.tilemap.worldToTileY(pointerY),
+      this.tilemap.worldToTileX(vect.x), this.tilemap.worldToTileY(vect.y), this.tilemap.worldToTileX(pointerX + this.length * radiusVect.x),
+      this.tilemap.worldToTileY(pointerY + this.length * radiusVect.y));
+    for (const layer of this.gameMap.backgroundLayers) {
+      this.fov.compute(
         tileX,
         tileY,
         this.length / 10,
         (x, y) => {
-          const tile = layer?.tilemapLayer?.getTileAt(x, y);
+          const tile = layer?.getTileAt(x, y);
           if (!tile) {
             return false;
           }
@@ -75,15 +71,21 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
         },
         (x, y) => {
           if (this.debugTriangle.contains(x, y)) {
-            const tile = layer?.tilemapLayer?.getTileAt(x, y);
-            if (!tile) {
-              return;
+            const tile = layer?.getTileAt(x, y);
+            if (tile) {
+              const d = Phaser.Math.Distance.Between(tileY, tileX, y, x);
+              const alpha = Math.min(2 - d / (this.length / 10 - 4), 1);
+              tile.tint = 0xffffff;
+              tile.alpha = alpha;
             }
-            const d = Phaser.Math.Distance.Between(tileY, tileX, y, x);
-            const alpha = Math.min(2 - d / (this.length / 10 - 4), 1);
+            for (const foregroundLayer of this.gameMap.foregroundLayers) {
+              const foregroundTile = foregroundLayer?.getTileAt(x, y);
+              if (foregroundTile) {
 
-            tile.tint = 0xffffff;
-            tile.alpha = alpha;
+                foregroundTile.tint = 0xffffff;
+                foregroundTile.alpha = 0xffffff;
+              }
+            }
           }
         }
       );
