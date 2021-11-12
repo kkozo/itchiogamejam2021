@@ -1,24 +1,26 @@
 import {Mrpas} from 'mrpas';
 import GameMap from './map';
+import {game} from '../main';
 
 export default class Lightsource extends Phaser.GameObjects.GameObject {
   private fov?: Mrpas;
   private tilemap: Phaser.Tilemaps.Tilemap;
   private direction = new Phaser.Math.Vector2(1, 0);
-  private angle = 250;
+  private angle = 120;
   private debugTriangle: Phaser.Geom.Triangle;
   private debugRectangle: Phaser.Geom.Polygon;
   private circle1: Phaser.GameObjects.Arc;
   private circle2: Phaser.GameObjects.Arc;
   private circle3: Phaser.GameObjects.Arc;
-  private length = 250;
+  private length = 550;
+  private currentRotation: number;
 
   // other properties and preload()
 
   constructor(scene: Phaser.Scene, private gameMap: GameMap) {
     super(scene, 'lightSource');
     this.tilemap = gameMap.getMap();
-
+    this.currentRotation = 1;
     scene.add.existing(this);
     this.fov = (new Mrpas(this.tilemap.width, this.tilemap.height, (x, y) => {
       for (const layer of this.gameMap.backgroundLayers) {
@@ -37,6 +39,10 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     this.circle2 = this.scene.add.circle(this.debugTriangle.x2, this.debugTriangle.y2, 15, 0x00ff00);
     this.circle3 = this.scene.add.circle(this.debugTriangle.x3, this.debugTriangle.y3, 15, 0x0000ff);
 
+    this.scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+      this.direction.rotate(((deltaY) / 8));
+    });
+
 
   }
 
@@ -46,11 +52,15 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     const tileX = this.tilemap.worldToTileX(pointerX);
     const tileY = this.tilemap.worldToTileX(pointerY);
 
-    this.angle = this.angle + delta / 250;
-    this.direction.rotate(5 / delta / 25);
+    this.angle = this.angle + delta * this.currentRotation / this.angle;
+    if (this.angle > 180) {
+      this.currentRotation = -1;
+    } else {
+      this.currentRotation = 1;
+    }
     const vect = new Phaser.Math.Vector2(pointerX + this.length * this.direction.x, pointerY + this.length * this.direction.y);
 
-    const radiusVect = this.direction.clone().rotate(Math.PI / 3);
+    const radiusVect = this.direction.clone().rotate(Math.PI / 4);
     this.circle1.setPosition(pointerX, pointerY);
     this.circle2.setPosition(vect.x, vect.y);
     this.circle3.setPosition(pointerX + this.length * radiusVect.x, pointerY + this.length * radiusVect.y);
@@ -86,7 +96,19 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
                 foregroundTile.alpha = 0xffffff;
               }
             }
+            const entities = this.scene.children.getChildren().filter(e => e.name === 'character');
+            for (const gameObject of entities) {
+              if (gameObject instanceof Phaser.GameObjects.Sprite) {
+                const entityTileX = this.tilemap.worldToTileX(gameObject.x);
+                const entityTileY = this.tilemap.worldToTileY(gameObject.y);
+                if (entityTileX === x && entityTileY === y) {
+                  gameObject.setVisible(true);
+                }
+              }
+            }
+
           }
+
         }
       );
     }

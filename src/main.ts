@@ -19,7 +19,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-
+  pixelArt: true,
   parent: 'game',
   backgroundColor: '#000000',
 

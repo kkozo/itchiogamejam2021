@@ -6,7 +6,6 @@ export default class Darkness extends Phaser.GameObjects.GameObject {
   constructor(scene: Phaser.Scene, private gameMap: GameMap) {
     super(scene, 'tileMapDarkness');
     this.map = gameMap.getMap();
-    scene.add.existing(this);
 
     this.scene.events.on('update', (time, delta) => {
       this.update(time, delta);
@@ -38,6 +37,11 @@ export default class Darkness extends Phaser.GameObjects.GameObject {
           }
         }
       }
+    }
+
+    const entities = this.scene.children.getChildren().filter(e => e.name === 'character');
+    for (const gameObject of entities) {
+      (gameObject as Phaser.GameObjects.Sprite).setVisible(false);
     }
     this.scene.events.emit('darknessCreated', time, delta);
   }
