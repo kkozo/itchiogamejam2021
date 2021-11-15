@@ -14,6 +14,7 @@
   "dependencies": {
     "mrpas": "^2.0.0",
     "phaser": "^3.55.0",
+    "phaser3-rex-plugins": "^1.1.63",
     "tslint": "^6.1.3"
   },
   "devDependencies": {

@@ -50,9 +50,9 @@ export default class Character extends Phaser.GameObjects.Sprite {
   private map?: Phaser.Tilemaps.Tilemap;
 
   private activePath: WalkingPath;
-  private talkingSprite: Phaser.GameObjects.Sprite;
+  private talkingIconSprite: Phaser.GameObjects.Sprite;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, private gameMap: GameMap, private characterData: CharacterData) {
+  constructor(scene: Phaser.Scene, x: number, y: number, private gameMap: GameMap, public characterData: CharacterData) {
     super(scene, gameMap.getMap().tileToWorldX(x), gameMap.getMap().tileToWorldY(y), characterData.spriteSheetName);
     super.setName('character');
     for (const anims of characterData.animationData) {
@@ -79,10 +79,22 @@ export default class Character extends Phaser.GameObjects.Sprite {
   }
 
   update(time: number, delta: number): void {
-    if (this.talkingSprite) {
-      this.talkingSprite.x = this.x;
-      this.talkingSprite.y = this.y - this.height / 2;
+    if (this.talkingIconSprite) {
+      this.talkingIconSprite.x = this.x;
+      this.talkingIconSprite.y = this.y - this.height / 2;
     }
+  }
+
+  public pauseWalking(): void {
+    this.scene.tweens.getAllTweens().forEach(e => {
+      e.pause();
+    });
+  }
+
+  public resumeWalking(): void {
+    this.scene.tweens.getAllTweens().forEach(e => {
+      e.resume();
+    });
   }
 
   public moveToTile(walkingPath: WalkingNode): void {
@@ -122,24 +134,31 @@ export default class Character extends Phaser.GameObjects.Sprite {
         this.scene.events.emit('walkDone' + this.characterData.characterName);
       }
     });
+
     this.play(animationMove);
   }
 
   public talk(text: string, duration: number): void {
-    this.talkingSprite = this.scene.add.sprite(this.x, this.y + this.height, 'uiIcons');
+    this.talkingIconSprite = this.scene.add.sprite(this.x, this.y + this.height, 'uiIcons');
+    this.talkingIconSprite.play('talking');
 
-    this.talkingSprite.play('talking');
+    this.talkingIconSprite.setInteractive();
+    this.talkingIconSprite.on('pointerdown', (pointer) => {
+      console.log('talking been clicked');
+      }
+    );
+
     setTimeout(() => {
-      this.talkingSprite.destroy();
-      this.talkingSprite = null;
+      this.talkingIconSprite.destroy();
+      this.talkingIconSprite = null;
     }, duration);
     return;
   }
 
   public setVisible(visible: boolean): this {
     super.setVisible(visible);
-    if (this.talkingSprite) {
-      this.talkingSprite.setVisible(visible);
+    if (this.talkingIconSprite) {
+      this.talkingIconSprite.setVisible(visible);
     }
     return this;
   }

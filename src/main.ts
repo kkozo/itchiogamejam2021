@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import {GameScene} from './scenes/game';
+import NinePatchPlugin from 'phaser3-rex-plugins/plugins/ninepatch-plugin.js';
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'BUG',
@@ -18,6 +19,13 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     arcade: {
       debug: false,
     },
+  },
+  plugins: {
+    global: [{
+      key: 'rexNinePatchPlugin',
+      plugin: NinePatchPlugin,
+      start: true
+    }]
   },
   pixelArt: true,
   parent: 'game',
