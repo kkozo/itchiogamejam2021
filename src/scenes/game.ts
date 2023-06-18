@@ -6,6 +6,8 @@ import ContextMenu from '../menu/contextMenu';
 import Character, {myCharacter} from '../character/character';
 import * as AnimationDefaults from '../data/constants';
 import Dialog from '../character/dialog';
+import WebGLRenderer = Phaser.Renderer.WebGL.WebGLRenderer;
+import GrayscalePipeline from '../shaders/grayscalepipeline';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -31,6 +33,8 @@ export class GameScene extends Phaser.Scene {
     this.load.audio('click', 'assets/sounds/retro_ui_menu_blip_click_02.wav');
     this.load.bitmapFont('atari', 'assets/fonts/atari-smooth.png', 'assets/fonts/atari-smooth.xml');
 
+
+
   }
 
   public create(): void {
@@ -41,7 +45,7 @@ export class GameScene extends Phaser.Scene {
     this.input.mouse.disableContextMenu();
 
     const darkness = new Darkness(this, this.gameMap);
-    const lightSource = new Lightsource(this, this.gameMap);
+    const lightSource = new Lightsource(this, this.gameMap, darkness);
     const character = new Character(this, 12, 12, this.gameMap, myCharacter);
     character.walkPath({
       nodes: [
@@ -65,6 +69,7 @@ export class GameScene extends Phaser.Scene {
     character.talk('blabla', 5000);
 
     const dialog = new Dialog(this, 450, 150, 'This is odd seeing this couch\nso empty.|I should go to the kitchen\nand get a snack.|Then I can really relax!|Nevermind!\nSnacks are terrible!', character);
+    (this.renderer as WebGLRenderer).pipelines.add('Grayscale', new GrayscalePipeline(this.game));
   }
 
 

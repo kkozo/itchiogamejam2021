@@ -1,5 +1,6 @@
 import GameMap from '../map/map';
 import * as AnimationDefaults from '../data/constants';
+import WebGLRenderer = Phaser.Renderer.WebGL.WebGLRenderer;
 
 export const myCharacter: CharacterData = {
   characterName: 'dodo',
@@ -76,6 +77,9 @@ export default class Character extends Phaser.GameObjects.Sprite {
     this.scene.events.on('update', (time, delta) => {
       this.update(time, delta);
     });
+    const grayscalePipeline = (this.scene.game.renderer as WebGLRenderer).pipelines.get('Grayscale');
+
+    this.setPipeline(grayscalePipeline);
   }
 
   update(time: number, delta: number): void {

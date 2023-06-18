@@ -1,6 +1,7 @@
 import {Mrpas} from 'mrpas';
 import GameMap from './map';
 import {game} from '../main';
+import Darkness from './darkness';
 
 export default class Lightsource extends Phaser.GameObjects.GameObject {
   private fov?: Mrpas;
@@ -8,7 +9,6 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
   private direction = new Phaser.Math.Vector2(1, 0);
   private angle = 120;
   private debugTriangle: Phaser.Geom.Triangle;
-  private debugRectangle: Phaser.Geom.Polygon;
   private circle1: Phaser.GameObjects.Arc;
   private circle2: Phaser.GameObjects.Arc;
   private circle3: Phaser.GameObjects.Arc;
@@ -17,7 +17,7 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
 
   // other properties and preload()
 
-  constructor(scene: Phaser.Scene, private gameMap: GameMap) {
+  constructor(scene: Phaser.Scene, private gameMap: GameMap, private darkness: Darkness) {
     super(scene, 'lightSource');
     this.tilemap = gameMap.getMap();
     this.currentRotation = 1;
@@ -34,7 +34,6 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     const vect = new Phaser.Math.Vector2(0 * 5 + this.direction.x, 0 * 5 + this.direction.y);
     this.direction = this.direction.rotate(this.angle / Math.PI);
     this.debugTriangle = new Phaser.Geom.Triangle(0, 0, vect.x, vect.y, 0 + 5 * this.direction.x, 0 + 5 * this.direction.y);
-    this.debugRectangle = new Phaser.Geom.Polygon([0, 0, 0, vect.x, vect.y, 0 + 5 * this.direction.x, 0 + 5 * this.direction.y]);
     this.circle1 = this.scene.add.circle(this.debugTriangle.x1, this.debugTriangle.y1, 15, 0xff0000);
     this.circle2 = this.scene.add.circle(this.debugTriangle.x2, this.debugTriangle.y2, 15, 0x00ff00);
     this.circle3 = this.scene.add.circle(this.debugTriangle.x3, this.debugTriangle.y3, 15, 0x0000ff);
@@ -49,6 +48,7 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
   update(time: number, delta: number): void {
     const pointerX = this.scene.input.activePointer.worldX;
     const pointerY = this.scene.input.activePointer.worldY;
+
     const tileX = this.tilemap.worldToTileX(pointerX);
     const tileY = this.tilemap.worldToTileX(pointerY);
 
@@ -60,13 +60,15 @@ export default class Lightsource extends Phaser.GameObjects.GameObject {
     }
     const vect = new Phaser.Math.Vector2(pointerX + this.length * this.direction.x, pointerY + this.length * this.direction.y);
 
-    const radiusVect = this.direction.clone().rotate(Math.PI / 4);
+    const radiusVect = this.direction.clone().rotate(Math.PI / 6);
+
     this.circle1.setPosition(pointerX, pointerY);
     this.circle2.setPosition(vect.x, vect.y);
     this.circle3.setPosition(pointerX + this.length * radiusVect.x, pointerY + this.length * radiusVect.y);
     this.debugTriangle.setTo(this.tilemap.worldToTileX(pointerX), this.tilemap.worldToTileY(pointerY),
       this.tilemap.worldToTileX(vect.x), this.tilemap.worldToTileY(vect.y), this.tilemap.worldToTileX(pointerX + this.length * radiusVect.x),
       this.tilemap.worldToTileY(pointerY + this.length * radiusVect.y));
+    this.darkness.move(pointerX, pointerY, [pointerX + this.direction.x*this.length, pointerY + this.direction.y*this.length], [pointerX + radiusVect.x*this.length, pointerY + radiusVect.y*this.length]);
     for (const layer of this.gameMap.backgroundLayers) {
       this.fov.compute(
         tileX,
